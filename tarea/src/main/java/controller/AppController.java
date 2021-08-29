@@ -29,11 +29,7 @@ public class AppController {
         listaUsuario2 = utilidades.leerDatos(rutaData2);
     }
 
-    public void imprimirdatos() {
-        for(Usuario user : listaUsuario1){
-            System.out.println(user.toString());
-        }
+    public ArrayList<Usuario> getListaUsuario1() {
+        return listaUsuario1;
     }
-
-
 }

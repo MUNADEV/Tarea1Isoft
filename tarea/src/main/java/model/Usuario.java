@@ -1,12 +1,13 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Usuario {
 
     private int id;
     private String correo;
-    private String ultima_conexion;
+    private Date ultima_conexion;
     private ArrayList<Integer> siguiendo = new ArrayList<Integer>();
 
     public Usuario(){
@@ -33,11 +34,11 @@ public class Usuario {
         this.correo = correo;
     }
 
-    public String getUltima_conexion() {
+    public Date getUltima_conexion() {
         return ultima_conexion;
     }
 
-    public void setUltima_conexion(String ultima_conexion) {
+    public void setUltima_conexion(Date ultima_conexion) {
         this.ultima_conexion = ultima_conexion;
     }
 

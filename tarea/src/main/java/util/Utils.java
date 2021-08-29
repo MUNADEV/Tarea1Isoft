@@ -8,7 +8,11 @@ import model.Usuario;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class Utils {
     /*
@@ -36,7 +40,7 @@ public class Utils {
                 Usuario usuario = new Usuario();
                 usuario.setId(Integer.parseInt(celda[0]));
                 usuario.setCorreo(celda[1]);
-                usuario.setUltima_conexion(celda[2]);
+                usuario.setUltima_conexion(this.StringtoDate(celda[2]));
 
                 //convierte un string en una lista separada por una coma
                 var listaSiguiendo = celda[3].split(",");
@@ -62,7 +66,32 @@ public class Utils {
         return listaUsuario;
     }
 
+    public Date StringtoDate(String dateString){
 
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date fecha= null;
+        try {
+            fecha = formatter.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return fecha;
+    }
+
+    public ArrayList<Integer> compararSiguiendo(ArrayList<Integer> lista1, ArrayList<Integer> lista2){
+        //Junta y ordena la lista de usuarios que sigue el usuario.
+        ArrayList<Integer> listaResultante = null;
+
+        //Junta las dos lista con el objetivo de procesarla:
+        listaResultante.addAll(lista1);
+        listaResultante.addAll(lista2);
+
+        //
+
+        return listaResultante;
+    }
 
 
 }
