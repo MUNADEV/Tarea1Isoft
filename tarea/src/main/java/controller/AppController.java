@@ -26,6 +26,7 @@ public class AppController {
     }
 
     public void writeData1(){
+        Usuario usuario = new Usuario();
 
         try {
             // Create an object of file reader class with CSV file as a parameter.
@@ -33,7 +34,7 @@ public class AppController {
 
             // create csvParser object with
             // custom separator semi-colon
-            CSVParser parser = new CSVParserBuilder().withSeparator(' ').build();
+            CSVParser parser = new CSVParserBuilder().withSeparator('\t').build();
 
             // create csvReader object with parameter
             // filereader and parser
@@ -45,15 +46,10 @@ public class AppController {
             List<String[]> allData = csvReader.readAll();
 
             // Print Data.
-            int i = 0;
             for (String[] row : allData) {
-
-
                 for (String cell : row) {
-                    listaUsuario1.set
-                    System.out.print(cell);
+                    System.out.print(cell );
                 }
-                i++;
                 System.out.println();
             }
         }
