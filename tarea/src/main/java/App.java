@@ -14,7 +14,7 @@ public class App {
     public static void main(String[] args) {
 
         AppController ap = new AppController();
-        ap.writeData1();
+        ap.imprimirdatos();
 
     }
 }

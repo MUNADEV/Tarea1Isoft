@@ -50,5 +50,15 @@ public class Usuario {
     }
 
 
+    @Override
+    public String toString() {
 
+
+        return "Usuario{" +
+                "id=" + id +
+                ", correo='" + correo + '\'' +
+                ", ultima_conexion='" + ultima_conexion + '\'' +
+                ", siguiendo=" + siguiendo +
+                '}';
+    }
 }
