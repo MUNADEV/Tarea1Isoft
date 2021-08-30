@@ -9,13 +9,27 @@ public class Usuario {
     private String correo;
     private Date ultima_conexion;
     private ArrayList<Integer> siguiendo = new ArrayList<Integer>();
+    private int seguidores;
+
+    private Boolean isActivo;
 
     public Usuario(){
-
     }
 
-    public Usuario(int id,String correo,String ultima_conexion){
+    public int getSeguidores() {
+        return seguidores;
+    }
 
+    public void setSeguidores(int seguidores) {
+        this.seguidores = seguidores;
+    }
+
+    public Boolean isActivo() {
+        return isActivo;
+    }
+
+    public void setActivo(Boolean activo) {
+        isActivo = activo;
     }
 
     public int getId() {
@@ -51,6 +65,10 @@ public class Usuario {
     }
 
 
+    public Boolean getActivo() {
+        return isActivo;
+    }
+
     @Override
     public String toString() {
 
@@ -62,4 +80,5 @@ public class Usuario {
                 ", siguiendo=" + siguiendo +
                 '}';
     }
+
 }

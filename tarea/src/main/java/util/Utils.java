@@ -6,6 +6,7 @@ import model.Usuario;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -62,11 +63,14 @@ public class Utils {
         return listaUsuario;
     }
 
-    public void escribirDatos(ArrayList<Usuario> usuarios){
-        String csv = "data.csv";
+    public void escribirDatosCSV(ArrayList<Usuario> usuarios){
+        //Escribe los datos de la lista de usuarios definitivos
+
+        //nombre del archivo
+        String csv = "datos.csv";
         CSVWriter writer = null;
         try {
-            writer = new CSVWriter(new FileWriter(csv));
+            writer = new CSVWriter(new FileWriter(csv), ';', ' ',' ', "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -77,17 +81,16 @@ public class Utils {
 
         List<String[]> allData = new ArrayList<String[]>();
 
-
+        //Escritura de los Usuarios en el csv en una fila y celda respectiva
         for(Usuario usuario : usuarios){
-            String[] fila = new String[]{Integer.toString(usuario.getId(),
+            String[] fila = new String[]{String.valueOf(usuario.getId()),
                                         usuario.getCorreo(),
-                                        usuario.getUltima_conexion(),
-                                        usuario.get
-                    )};
+                                        dateToString(usuario.getUltima_conexion()),
+                                        listaToString(usuario.getSiguiendo())
+                                        };
             allData.add(fila);
         }
-
-
+        //escritura de las filas
         writer.writeAll(allData);
 
         try {
@@ -96,8 +99,51 @@ public class Utils {
             e.printStackTrace();
         }
     }
+    public void escribirTXT(ArrayList<Usuario> inactivos,ArrayList<Usuario> sigueMitadInactivos,Usuario usuarioMasSeguidores){
+        //Escribe los datos de la lista de usuarios definitivos
+        List<String[]> allData = new ArrayList<String[]>();
 
+        //nombre del archivo
+        String archivo = "resultados.csv";
+        CSVWriter writer = null;
+        try {
+            writer = new CSVWriter(new FileWriter(archivo), ';', ' ',' ', "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String[] header_matricula = new String[]{"#### 20644103819 ###"};
+        String[] titulo1 = new String[]{"#### INICIO USUARIOS INACTIVOS ###"};
+        String[] header_usuariosInactivos= new String[]{"id;correo;ultima_conexion;siguiendo"};
+
+        writer.writeNext(header_matricula);
+        writer.writeNext(titulo1);
+        writer.writeNext(header_usuariosInactivos);
+
+
+
+        //Escritura de los usuarios inactivos en el archivo
+        for(Usuario inactivo : inactivos){
+            String[] fila = new String[]{String.valueOf(inactivo.getId()),
+                    inactivo.getCorreo(),
+                    dateToString(inactivo.getUltima_conexion()),
+                    listaToString(inactivo.getSiguiendo())
+            };
+            allData.add(fila);
+        }
+
+        //
+        writer.writeAll(allData);
+
+        try {
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    }
     public ArrayList<Usuario> generarListaDefinitiva(ArrayList<Usuario> lista1,ArrayList<Usuario> lista2){
+        // Genera una lista juntando los datos de los dos csv
         ArrayList<Usuario> listaDefinitiva = new ArrayList<>();
 
         for (int i=0; i < lista1.size(); i++){
@@ -107,29 +153,33 @@ public class Utils {
             //correo
             usuarioNuevo.setCorreo(lista1.get(i).getCorreo());
             //ultimaConexion
-            usuarioNuevo.setUltima_conexion(this.obtenerMasReciente(lista1.get(i).getUltima_conexion(),lista2.get(i).getUltima_conexion()));
+            usuarioNuevo.setUltima_conexion(this.fechaMasReciente(lista1.get(i).getUltima_conexion(),lista2.get(i).getUltima_conexion()));
             //lista de seguidos
-            usuarioNuevo.setSiguiendo(this.compararListasSiguiendo(lista1.get(i).getSiguiendo(),lista2.get(i).getSiguiendo()));
+            ArrayList<Integer> listaSiguiendo = this.compararListasSiguiendo(lista1.get(i).getSiguiendo(),lista2.get(i).getSiguiendo());
+            usuarioNuevo.setSiguiendo(listaSiguiendo);
+
+            //Evalua si el usuario es activo, considerando activo desde: 2019/08/30
+            Date fechaActivos = new Date(119,7,30);
+            if(usuarioNuevo.getUltima_conexion().after(fechaActivos)){
+                usuarioNuevo.setActivo(true);
+            }else{
+                usuarioNuevo.setActivo(false);
+            }
 
             //se agrega a la lista definitiva
             listaDefinitiva.add(usuarioNuevo);
-
         }
+        //Registra el numero de seguidores de los usuarios
+        for(int i = 1; i < listaDefinitiva.size(); i++){
+            for(Integer num : listaDefinitiva.get(i).getSiguiendo()){
+
+                    listaDefinitiva.get(num).setSeguidores(listaDefinitiva.get(num).getSeguidores()+1);
+                }
+            }
+
         return listaDefinitiva;
     }
-    public Date stringtoDate(String dateString){
 
-
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        Date fecha= null;
-        try {
-            fecha = formatter.parse(dateString);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        return fecha;
-    }
 
     public ArrayList<Integer> compararListasSiguiendo(ArrayList<Integer> lista1, ArrayList<Integer> lista2){
         //Junta y ordena la lista de usuarios que sigue el usuario.
@@ -150,12 +200,48 @@ public class Utils {
         return listaResultante;
     }
 
-    public Date obtenerMasReciente(Date fecha1, Date fecha2){
+    public Date fechaMasReciente(Date fecha1, Date fecha2){
+        //Compara dos fechas y retorna la fehca mas reciente
         if(fecha1.after(fecha2)){
             return fecha1;
         }else{
             return fecha2;
         }
+    }
+
+    public String listaToString(ArrayList<Integer> listaInteger){
+        //transforma un ArrayList en un String
+        String listaString = "";
+
+        for (int i = 0; i < listaInteger.size(); i++){
+            listaString+= listaInteger.get(i).toString();
+            //eliminar la ultimaComa
+            if(i != listaInteger.size()-1){
+                listaString+= ",";
+            }
+
+
+        }
+        return listaString;
+    }
+    public Date stringtoDate(String dateString){
+        //Transforma un dato tipo String a dato de tipo DAte
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date fecha= null;
+        try {
+            fecha = formatter.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return fecha;
+    }
+    public String dateToString(Date fecha){
+        //Transforma la fecha  tipo Date en String
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String fechaString = dateFormat.format(fecha);
+
+        return fechaString;
     }
 
 }
