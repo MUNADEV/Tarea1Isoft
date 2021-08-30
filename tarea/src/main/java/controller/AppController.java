@@ -1,35 +1,33 @@
 package controller;
 
-import com.opencsv.CSVParser;
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.exceptions.CsvException;
 import model.Usuario;
 import util.Utils;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class AppController {
 
-    ArrayList<Usuario> listaUsuario1 = new ArrayList<>();
-    ArrayList<Usuario> listaUsuario2 = new ArrayList<>();
+    ArrayList<Usuario> listaUsuarios1;
+    ArrayList<Usuario> listaUsuarios2;
+    ArrayList<Usuario> usuariosDefinitivos;
 
     Utils utilidades = new Utils();
     String rutaData1 = "\\C:\\Users\\javie\\Proyectos\\tarea_2s2021\\enunciado\\datasets\\dataset1.csv";
     String rutaData2 = "\\C:\\Users\\javie\\Proyectos\\tarea_2s2021\\enunciado\\datasets\\dataset2.csv";
 
     public AppController() {
-        listaUsuario1 = utilidades.leerDatos(rutaData1);
-        listaUsuario2 = utilidades.leerDatos(rutaData2);
+        listaUsuarios1 = utilidades.leerDatos(rutaData1);
+        listaUsuarios2 = utilidades.leerDatos(rutaData2);
     }
 
-    public ArrayList<Usuario> getListaUsuario1() {
-        return listaUsuario1;
+    public void generarCSV(){
+        usuariosDefinitivos = utilidades.generarListaDefinitiva(listaUsuarios1,listaUsuarios2);
+        utilidades.escribirDatos(usuariosDefinitivos);
+    }
+    public ArrayList<Usuario> getListaUsuarios1() {
+        return listaUsuarios1;
+    }
+    public ArrayList<Usuario> getListaUsuarios2(){
+        return listaUsuarios2;
     }
 }

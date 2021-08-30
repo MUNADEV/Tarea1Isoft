@@ -1,16 +1,9 @@
-
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvException;
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.text.ParseException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 import controller.*;
-import org.apache.commons.collections4.bag.CollectionSortedBag;
+import util.Utils;
 
 public class App {
 
@@ -19,32 +12,16 @@ public class App {
 
         AppController ap = new AppController();
 
-        System.out.println(ap.getListaUsuario1().get(3).getUltima_conexion());
+        System.out.println(ap.getListaUsuarios1().get(3).getUltima_conexion());
 
-        Date fecha1 = ap.getListaUsuario1().get(3).getUltima_conexion();//11-10-2020
-        Date fecha2 = ap.getListaUsuario1().get(4).getUltima_conexion();//14/01/2018
-
-        if(fecha1.after(fecha2)){
-            System.out.println("fecha1 es la mas reciente que fecha 2");
-        }else{
-            System.out.println("fecha2 es la mas reciente que la fecha 1");
-        }
-
-        ArrayList<Integer> lista = new ArrayList<>();
-        lista.add(1231312);
-        lista.add(12123);
-        lista.add(213);
-        lista.add(213);
-        lista.add(213);
-        lista.add(2314);
-
-        Set<Integer> set = new LinkedHashSet<>(lista);
-        lista.clear();
-        lista.addAll(set);
+        Date fecha1 = ap.getListaUsuarios1().get(3).getUltima_conexion();//11-10-2020
+        Date fecha2 = ap.getListaUsuarios1().get(4).getUltima_conexion();//14/01/2018
 
 
-        Collections.sort(lista);
-        System.out.println(lista);
-
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String strDate = dateFormat.format(fecha1);
+        System.out.println("Converted String: " + strDate);
+        Utils ut = new Utils();
+        ap.generarCSV();
     }
 }
