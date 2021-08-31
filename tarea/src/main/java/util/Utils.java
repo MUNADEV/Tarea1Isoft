@@ -99,12 +99,15 @@ public class Utils {
             e.printStackTrace();
         }
     }
-    public void escribirTXT(ArrayList<Usuario> inactivos,ArrayList<Usuario> sigueMitadInactivos,Usuario usuarioMasSeguidores){
+    public void escribirDatosTXT(ArrayList<Usuario> inactivos, ArrayList<Usuario> sigueMitadInactivos, ArrayList<Usuario> usuarioMasSeguidores){
         //Escribe los datos de la lista de usuarios definitivos
-        List<String[]> allData = new ArrayList<String[]>();
+        List<String[]> data1 = new ArrayList<String[]>();
+        List<String[]> data2 = new ArrayList<String[]>();
+        List<String[]> data3 = new ArrayList<String[]>();
+
 
         //nombre del archivo
-        String archivo = "resultados.csv";
+        String archivo = "resultados.txt";
         CSVWriter writer = null;
         try {
             writer = new CSVWriter(new FileWriter(archivo), ';', ' ',' ', "\n");
@@ -114,13 +117,11 @@ public class Utils {
 
         String[] header_matricula = new String[]{"#### 20644103819 ###"};
         String[] titulo1 = new String[]{"#### INICIO USUARIOS INACTIVOS ###"};
-        String[] header_usuariosInactivos= new String[]{"id;correo;ultima_conexion;siguiendo"};
+        String[] header_usuarios1= new String[]{"id;correo;ultima_conexion;siguiendo"};
 
         writer.writeNext(header_matricula);
         writer.writeNext(titulo1);
-        writer.writeNext(header_usuariosInactivos);
-
-
+        writer.writeNext(header_usuarios1);
 
         //Escritura de los usuarios inactivos en el archivo
         for(Usuario inactivo : inactivos){
@@ -129,11 +130,44 @@ public class Utils {
                     dateToString(inactivo.getUltima_conexion()),
                     listaToString(inactivo.getSiguiendo())
             };
-            allData.add(fila);
+            data1.add(fila);
         }
+        String[] footer1 = new String[]{"### FIN USUARIOS INACTIVOS ###"};
+        writer.writeAll(data1);
+        writer.writeNext(footer1);
 
-        //
-        writer.writeAll(allData);
+
+        String[] titulo2 = new String[]{"### INICIO USUARIOS SIGUIENDO 50% O MAS DE INACTIVOS ###"};
+        String[] header_usuarios2 = new String[]{"id;correo,id_inactivos"};
+        writer.writeNext(titulo2);
+        writer.writeNext(header_usuarios2);
+        for (Usuario usuario : sigueMitadInactivos){
+            String[] fila = new String[]{ String.valueOf(usuario.getId()),
+                                            usuario.getCorreo(),
+                                            listaToString(usuario.getSiguendoInactivo())
+            };
+            data2.add(fila);
+        }
+        String[] footer2 = new String[]{"### FIN USUARIOS SIGUIENDO 50% O MAS DE USUARIOS INACTIVOS  ###"};
+        writer.writeAll(data2);
+        writer.writeNext(footer2);
+
+
+        String[] titulo3 = new String[]{"### INICIO USUARIOS CON MAS SEGUIDORES ###"};
+        String[] header_usuarios3 = new String[]{"id;correo;nro_seguidores"};
+        writer.writeNext(titulo3);
+        writer.writeNext(header_usuarios3);
+        for(Usuario usuario : usuarioMasSeguidores){
+            String[] fila = new String[]{ String.valueOf(usuario.getId()),
+                                            usuario.getCorreo(),
+                                            String.valueOf(usuario.getSeguidores())
+
+             };
+            data3.add(fila);
+        }
+        String[] footer3 = new String[]{"### FIN USUARIOS CON MAS SEGUIDORES ###"};
+        writer.writeAll(data3);
+        writer.writeNext(footer3);
 
         try {
             writer.close();
@@ -141,7 +175,7 @@ public class Utils {
             e.printStackTrace();
         }
     }
-    }
+
     public ArrayList<Usuario> generarListaDefinitiva(ArrayList<Usuario> lista1,ArrayList<Usuario> lista2){
         // Genera una lista juntando los datos de los dos csv
         ArrayList<Usuario> listaDefinitiva = new ArrayList<>();
@@ -160,6 +194,7 @@ public class Utils {
 
             //Evalua si el usuario es activo, considerando activo desde: 2019/08/30
             Date fechaActivos = new Date(119,7,30);
+
             if(usuarioNuevo.getUltima_conexion().after(fechaActivos)){
                 usuarioNuevo.setActivo(true);
             }else{
@@ -169,18 +204,20 @@ public class Utils {
             //se agrega a la lista definitiva
             listaDefinitiva.add(usuarioNuevo);
         }
-        //Registra el numero de seguidores de los usuarios
+        //Registra el numero de seguidores de los usuarios y discrimina los usuarios inactivos que sigue el usuario
         for(int i = 1; i < listaDefinitiva.size(); i++){
             for(Integer num : listaDefinitiva.get(i).getSiguiendo()){
-
+                     // Define seguidores del usuario
                     listaDefinitiva.get(num).setSeguidores(listaDefinitiva.get(num).getSeguidores()+1);
+                    // Define los usuarios que sigue el usuario inactivo
+                    if(!listaDefinitiva.get(num - 1).isActivo()){
+                        listaDefinitiva.get(i).getSiguendoInactivo().add(num);
+                    }
                 }
             }
 
         return listaDefinitiva;
     }
-
-
     public ArrayList<Integer> compararListasSiguiendo(ArrayList<Integer> lista1, ArrayList<Integer> lista2){
         //Junta y ordena la lista de usuarios que sigue el usuario.
         ArrayList<Integer> listaResultante = new ArrayList<>();
@@ -219,8 +256,6 @@ public class Utils {
             if(i != listaInteger.size()-1){
                 listaString+= ",";
             }
-
-
         }
         return listaString;
     }

@@ -11,16 +11,14 @@ public class AppController {
     ArrayList<Usuario> listaUsuarios2;
     ArrayList<Usuario> usuariosDefinitivos;
 
-    ArrayList<Usuario> usuariosInactivos;
 
     Utils utilidades = new Utils();
-    String rutaData1 = "\\C:\\Users\\javie\\Proyectos\\tarea_2s2021\\enunciado\\datasets\\dataset1.csv";
-    String rutaData2 = "\\C:\\Users\\javie\\Proyectos\\tarea_2s2021\\enunciado\\datasets\\dataset2.csv";
+    String rutaData1 = "datasets\\dataset1.csv";
+    String rutaData2 = "datasets\\dataset2.csv";
 
     public AppController() {
         leerCSV();
         usuariosDefinitivos = utilidades.generarListaDefinitiva(listaUsuarios1,listaUsuarios2);
-        usuariosInactivos = this.usuariosInactivos();
     }
 
     public void leerCSV(){
@@ -32,10 +30,17 @@ public class AppController {
         utilidades.escribirDatosCSV(usuariosDefinitivos);
     }
     public void generarTXT(){
+        // Genera el txt solicitado
+        ArrayList<Usuario> inactivos = this.usuariosInactivos();
+        ArrayList<Usuario> sigueMasInactivos = this.usuariosSiguendoMasInactivos();
+        ArrayList<Usuario> mayorSeguidores = this.usuariosMasSeguidores();
+
+        utilidades.escribirDatosTXT(inactivos,sigueMasInactivos,mayorSeguidores);
 
     }
     public ArrayList<Usuario> usuariosInactivos(){
         // Retorna todos los usuarios inactivos
+        ArrayList<Usuario> usuariosInactivos = new ArrayList<>();
         for(Usuario usuario : this.usuariosDefinitivos){
             if(!usuario.isActivo()){
                 usuariosInactivos.add(usuario);
@@ -44,18 +49,36 @@ public class AppController {
         utilidades.escribirDatosCSV(usuariosInactivos);
         return usuariosInactivos;
     }
-    public ArrayList<Usuario> usuariosSiguenMitadInactivos(){
+    public ArrayList<Usuario> usuariosSiguendoMasInactivos(){
         ArrayList<Usuario> usuarios = new ArrayList<>();
         for(Usuario usuario : this.usuariosDefinitivos){
-
+            int mitadSeguidos = usuario.getSiguiendo().size()/2;
+            if(usuario.getSiguendoInactivo().size() > mitadSeguidos){
+                usuarios.add(usuario);
+            }
         }
         return usuarios;
     }
+    public ArrayList<Usuario> usuariosMasSeguidores(){
+        ArrayList<Usuario> usuarios = new ArrayList<>();
 
-    public ArrayList<Usuario> getUsuariosDefinitivos() {
-        return usuariosDefinitivos;
+        int usuarioId;
+        int mayorSeguidores = 0;
+        //Busca la mayor cantidad de seguidores que puede tener un usuario
+        for(Usuario usuario : usuariosDefinitivos){
+            if(usuario.getSeguidores()>=mayorSeguidores){
+                mayorSeguidores = usuario.getSeguidores();
+            }
+        }
+        //Busca todos los usuarios que coincidan con la cantidad de seguidores anterior
+        for(Usuario usuario : usuariosDefinitivos){
+            if(usuario.getSeguidores()==mayorSeguidores){
+                usuarios.add(usuario);
+            }
+        }
+
+        return usuarios;
     }
-
 
 
 }

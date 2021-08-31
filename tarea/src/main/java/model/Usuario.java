@@ -9,6 +9,7 @@ public class Usuario {
     private String correo;
     private Date ultima_conexion;
     private ArrayList<Integer> siguiendo = new ArrayList<Integer>();
+    private ArrayList<Integer> siguendoInactivo = new ArrayList<>();
     private int seguidores;
 
     private Boolean isActivo;
@@ -64,6 +65,13 @@ public class Usuario {
         this.siguiendo = siguiendo;
     }
 
+    public ArrayList<Integer> getSiguendoInactivo() {
+        return siguendoInactivo;
+    }
+
+    public void setSiguendoInactivo(ArrayList<Integer> siguendoInactivo) {
+        this.siguendoInactivo = siguendoInactivo;
+    }
 
     public Boolean getActivo() {
         return isActivo;
